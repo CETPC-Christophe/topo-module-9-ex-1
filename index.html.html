@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Topographie</title>
+    <style>
+        :root {
+            --orange: #ff6600;
+            --noir: #222;
+            --gris: #f3f3f3;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            padding: 16px;
+            background-color: var(--gris);
+            color: var(--noir);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
+        }
+        
+        .banner {
+            background: var(--noir);
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 820px;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            color: var(--orange);
+            margin: 8px 0;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #555;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        
+        .table-container {
+            background: #fff;
+            padding: 16px;
+            margin: 8px auto;
+            border-left: 8px solid var(--orange);
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 820px;
+            box-sizing: border-box;
+            overflow-x: auto;
+        }
+        
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: white;
+            width: 100%;
+        }
+        
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .station {
+            background-color: #f0f0f0;
+            min-width: 60px;
+        }
+        
+        .label {
+            text-align: left;
+            background-color: #f9f9f9;
+            padding-left: 10px;
+        }
+        
+        .value {
+            color: var(--orange);
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        th {
+            background-color: var(--noir);
+            color: white;
+            border: 1px solid var(--noir);
+        }
+        
+        input[type="text"] {
+            width: 95%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border: 2px solid var(--orange);
+            background-color: #fffacd;
+        }
+        
+        .input-cell {
+            padding: 6px;
+        }
+        
+        h2 {
+            text-align: center;
+            color: var(--noir);
+            margin-top: 25px;
+            font-size: 1.1em;
+        }
+        
+        .correction-table {
+            background-color: #f0fdf4;
+        }
+        
+        .correction-table td {
+            background-color: #f0fdf4;
+            color: var(--noir);
+        }
+        
+        .read-only {
+            background-color: #dbeafe;
+            border: 1px solid #0284c7;
+            padding: 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #0c4a6e;
+        }
+        
+        .highlight-yellow {
+            background-color: #ffff00;
+            font-weight: bold;
+        }
+        
+        .correction-table thead th {
+            background-color: var(--noir);
+            color: white;
+        }
+        
+        button {
+            background: var(--orange);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: 0.3s;
+        }
+        
+        button[disabled] {
+            opacity: 0.6;
+            cursor: default;
+        }
+        
+        button:hover:not([disabled]) {
+            background: #e65c00;
+        }
+        
+        .control-container {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px auto 0;
+            box-sizing: border-box;
+        }
+        
+        #score-display {
+            background: #fff;
+            padding: 15px;
+            margin: 15px auto;
+            border-left: 8px solid var(--orange);
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 820px;
+            box-sizing: border-box;
+        }
+        
+        #score-text {
+            font-size: 1.2em;
+            color: var(--orange);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        #details-text {
+            color: #666;
+            margin: 5px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #777;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .intro-container {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            justify-content: center;
+            margin: 8px auto;
+        }
+
+        .question {
+            background: #fff;
+            padding: 16px;
+            border-left: 8px solid var(--orange);
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+            text-align: center;
+            width: 100%;
+            max-width: 820px;
+            box-sizing: border-box;
+        }
+
+        .intro-form {
+            text-align: center;
+        }
+
+        .intro-form p {
+            margin: 8px 0;
+            font-weight: 600;
+        }
+
+        .intro-form input {
+            padding: 8px;
+            width: 100%;
+            max-width: 320px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-top: 6px;
+        }
+
+        .intro-form input:focus {
+            outline: none;
+            border: 2px solid var(--orange);
+            background-color: #fffacd;
+        }
+
+        .intro-buttons {
+            margin-top: 6px;
+        }
+
+        .content-section {
+            display: none;
+            width: 100%;
+        }
+
+        .content-section.visible {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+            .table-container {
+                padding: 12px;
+                margin: 8px 0;
+            }
+            table {
+                font-size: 0.85em;
+                width: 100%;
+            }
+            td, th {
+                padding: 6px 8px;
+                border: 1px solid #999;
+            }
+            .station {
+                min-width: 50px;
+            }
+            .label {
+                padding-left: 5px;
+            }
+            .value {
+                font-size: 0.95em;
+            }
+            input[type="text"] {
+                width: 90%;
+                font-size: 0.85em;
+                padding: 5px;
+            }
+            h1 {
+                font-size: 1.3em;
+            }
+            h2 {
+                font-size: 1.05em;
+                margin-top: 15px;
+            }
+            button {
+                padding: 8px 15px;
+                margin: 5px;
+                font-size: 0.9em;
+            }
+            #score-display {
+                padding: 12px !important;
+                margin: 10px auto !important;
+            }
+            #score-text {
+                font-size: 1.1em !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .question {
+                padding: 14px;
+            }
+            .intro-form input {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            .banner {
+                padding: 8px;
+                font-size: 0.95em;
+            }
+            .table-container {
+                padding: 10px;
+                margin: 5px 0;
+            }
+            h1 {
+                font-size: 1.1em;
+            }
+            h2 {
+                font-size: 0.95em;
+                margin-top: 12px;
+            }
+            table {
+                font-size: 0.75em;
+                width: 100%;
+            }
+            td, th {
+                padding: 4px 6px;
+                border: 1px solid #999;
+            }
+            .station {
+                min-width: 45px;
+            }
+            .value {
+                font-size: 0.85em;
+            }
+            input[type="text"] {
+                width: 100%;
+                font-size: 0.8em;
+                padding: 4px;
+            }
+            .question {
+                padding: 10px;
+            }
+            .intro-form input {
+                width: 95%;
+                font-size: 0.9em;
+            }
+            button {
+                padding: 8px 12px;
+                margin: 5px 3px;
+                font-size: 0.8em;
+                width: auto;
+            }
+            #score-display {
+                padding: 10px !important;
+                margin: 8px auto !important;
+            }
+            #score-text {
+                font-size: 0.95em !important;
+            }
+            #details-text {
+                font-size: 0.8em;
+            }
+            .footer {
+                font-size: 0.8em;
+                margin-top: 15px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        const AUTHORIZED_CANDIDATES = {
+            "Professeur": [
+                "MARINO", "CHARDON", "CHIOTTI", "MATHIEU", "MAUSSION"
+            ],
+            "1 cetpc": [
+                "BONTEMPS", "BRIATORE", "BUCCIO", "DIONISI", "ERETEO", "GARNERO", "GRISONI", 
+                "GUENEAU", "HADANGUE", "LACROIX", "LEJEUNE", "MAAZAOUI", "MARTINEAU", "MONELLO", 
+                "PI-BUTHION", "QUILICO", "REMY", "SANTIAGO", "SCIARAFFA", "THEVENET", "TRUFFE", "VILLEROY"
+            ],
+            "2 cetpc": [
+                "ALBERT", "AUDISIO", "BABA", "BERTOLOTTO", "BOUCHEE", "BOUFFART", "BOURGUIGNON", 
+                "BOUSQUET", "CAPPADORO", "COLPAERT", "CULMINE", "DOYEN", "GAALOUL", "GEORGE", 
+                "GUEURUNURIAN", "MONTEIRO", "PAGE", "PALAGONIA", "PELLET", "PONZO", "PRUVOST", 
+                "RICHARD", "TETI"
+            ]
+        };
+
+        function isAuthorizedCandidate(name) {
+            const upperName = name.toUpperCase().trim();
+            for (const group in AUTHORIZED_CANDIDATES) {
+                if (AUTHORIZED_CANDIDATES[group].includes(upperName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function generateRandomValue() {
+            const endings = [0, 2, 5, 7];
+            const randomEnding = endings[Math.floor(Math.random() * endings.length)];
+            const base = Math.floor(Math.random() * 400) * 10 + Math.floor(Math.random() * 10);
+            let value = base * 10 + randomEnding;
+            while (value < 100 || value > 4000) {
+                value = Math.floor(Math.random() * 3900) + 100;
+                value = Math.floor(value / 10) * 10 + randomEnding;
+            }
+            return value;
+        }
+
+        function generateRandomAltitude() {
+            return Math.floor(Math.random() * 1400) + 100;
+        }
+
+        function initializeRandomValues() {
+            const refAlt = generateRandomAltitude();
+
+            const dataMap = {
+                'ref1': { value: generateRandomValue() },
+                'p1': { value: generateRandomValue() },
+                'p2': { value: generateRandomValue() },
+                'p2b': { value: generateRandomValue() },
+                'p3': { value: generateRandomValue() },
+                'p3b': { value: generateRandomValue() },
+                'p4': { value: generateRandomValue() },
+                'p4b': { value: generateRandomValue() },
+                'p5': { value: generateRandomValue() },
+                'p5b': { value: generateRandomValue() },
+                'p6': { value: generateRandomValue() },
+                'p6b': { value: generateRandomValue() },
+                'p7': { value: generateRandomValue() },
+                'p7b': { value: generateRandomValue() },
+                'p8': { value: generateRandomValue() }
+            };
+
+            window.lectureData = dataMap;
+            window.refAltitude = refAlt;
+            updateAltitudeDisplay();
+            updateTable();
+        }
+
+        function updateAltitudeDisplay() {
+            const altSpan = document.querySelector('span.altitude-reference');
+            if (altSpan) {
+                altSpan.textContent = window.refAltitude;
+            }
+        }
+
+        function updateTable() {
+            const data = window.lectureData;
+            const refAlt = window.refAltitude;
+            let currentAlt = refAlt;
+            let prevReading = data['ref1'].value;
+
+            const tbody = document.querySelector('.correction-table tbody');
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows[0].cells[2].textContent = data['ref1'].value;
+            rows[0].cells[5].textContent = refAlt;
+
+            rows[1].cells[3].textContent = data['p1'].value;
+            const deniv1 = data['ref1'].value - data['p1'].value;
+            rows[1].cells[4].textContent = deniv1;
+            currentAlt = refAlt + (deniv1 / 1000);
+            rows[1].cells[5].textContent = currentAlt.toFixed(3);
+
+            rows[2].cells[3].textContent = data['p2'].value;
+            const deniv2 = data['ref1'].value - data['p2'].value;
+            rows[2].cells[4].textContent = deniv2;
+            rows[2].cells[5].textContent = (refAlt + (deniv2 / 1000)).toFixed(3);
+
+            rows[3].cells[2].textContent = data['p2b'].value;
+            rows[3].cells[5].textContent = (refAlt + (deniv2 / 1000)).toFixed(3);
+
+            rows[4].cells[3].textContent = data['p3'].value;
+            const deniv3 = data['p2b'].value - data['p3'].value;
+            rows[4].cells[4].textContent = deniv3;
+            const alt3 = (refAlt + (deniv2 / 1000)) + (deniv3 / 1000);
+            rows[4].cells[5].textContent = alt3.toFixed(3);
+
+            rows[5].cells[2].textContent = data['p3b'].value;
+            rows[5].cells[5].textContent = alt3.toFixed(3);
+
+            rows[6].cells[3].textContent = data['p4'].value;
+            const deniv4 = data['p3b'].value - data['p4'].value;
+            rows[6].cells[4].textContent = deniv4;
+            const alt4 = alt3 + (deniv4 / 1000);
+            rows[6].cells[5].textContent = alt4.toFixed(3);
+
+            rows[7].cells[2].textContent = data['p4b'].value;
+            rows[7].cells[5].textContent = alt4.toFixed(3);
+
+            rows[8].cells[3].textContent = data['p5'].value;
+            const deniv5 = data['p4b'].value - data['p5'].value;
+            rows[8].cells[4].textContent = deniv5;
+            const alt5 = alt4 + (deniv5 / 1000);
+            rows[8].cells[5].textContent = alt5.toFixed(3);
+
+            rows[9].cells[2].textContent = data['p5b'].value;
+            rows[9].cells[5].textContent = alt5.toFixed(3);
+
+            rows[10].cells[3].textContent = data['p6'].value;
+            const deniv6 = data['p5b'].value - data['p6'].value;
+            rows[10].cells[4].textContent = deniv6;
+            const alt6 = alt5 + (deniv6 / 1000);
+            rows[10].cells[5].textContent = alt6.toFixed(3);
+
+            rows[11].cells[2].textContent = data['p6b'].value;
+            rows[11].cells[5].textContent = alt6.toFixed(3);
+
+            rows[12].cells[3].textContent = data['p7'].value;
+            const deniv7 = data['p6b'].value - data['p7'].value;
+            rows[12].cells[4].textContent = deniv7;
+            const alt7 = alt6 + (deniv7 / 1000);
+            rows[12].cells[5].textContent = alt7.toFixed(3);
+
+            rows[13].cells[2].textContent = data['p7b'].value;
+            rows[13].cells[5].textContent = alt7.toFixed(3);
+
+            rows[14].cells[3].textContent = data['p8'].value;
+            const deniv8 = data['p7b'].value - data['p8'].value;
+            rows[14].cells[4].textContent = deniv8;
+            const alt8 = alt7 + (deniv8 / 1000);
+            rows[14].cells[5].textContent = alt8.toFixed(3);
+
+            updateFirstTable();
+        }
+
+        function updateFirstTable() {
+            const data = window.lectureData;
+            const lecturesTable = document.getElementById('lectures-table');
+            const allValueCells = lecturesTable.querySelectorAll('.value[data-point]');
+            
+            allValueCells.forEach(cell => {
+                const pointId = cell.getAttribute('data-point');
+                if (data[pointId]) {
+                    cell.textContent = data[pointId].value;
+                }
+            });
+        }
+
+        function verifierReponses() {
+            const correctionTable = document.querySelector('.correction-table tbody');
+            const reponseTable = document.getElementById('response-table').querySelector('tbody');
+            const correctionRows = correctionTable.querySelectorAll('tr');
+            const reponseRows = reponseTable.querySelectorAll('tr');
+            
+            let totalCorrect = 0;
+            let totalPointsPossibles = 0;
+            const maxRows = Math.min(correctionRows.length, reponseRows.length);
+
+            for (let i = 0; i < maxRows; i++) {
+                const corrRow = correctionRows[i];
+                const repRow = reponseRows[i];
+                
+                for (let j = 0; j < 6; j++) {
+                    const corrCell = corrRow.cells[j];
+                    const repCell = repRow.cells[j];
+                    
+                    if (repCell && repCell.querySelector('input')) {
+                        const repValue = repCell.querySelector('input').value.trim();
+                        const corrValue = corrCell.textContent.trim();
+                        
+                        if (corrValue && corrValue !== '') {
+                            totalPointsPossibles++;
+                            if (repValue && parseFloat(repValue) === parseFloat(corrValue)) {
+                                totalCorrect++;
+                                repCell.style.backgroundColor = '#90EE90';
+                            } else if (repValue) {
+                                repCell.style.backgroundColor = '#FFB6C1';
+                            } else {
+                                repCell.style.backgroundColor = '#FFE4B5';
+                            }
+                        } else {
+                            repCell.style.backgroundColor = '';
+                        }
+                    }
+                }
+            }
+
+            const scorePercent = totalPointsPossibles > 0 ? (totalCorrect / totalPointsPossibles * 100).toFixed(1) : 0;
+            const scoreDisplay = document.getElementById('score-display');
+            const scoreText = document.getElementById('score-text');
+            const detailsText = document.getElementById('details-text');
+            
+            scoreText.textContent = `Score: ${totalCorrect}/${totalPointsPossibles} points (${scorePercent}%)`;
+            detailsText.textContent = `${window.candidateName ? '👤 ' + window.candidateName + ' - ' : ''}${totalCorrect} réponses correctes sur ${totalPointsPossibles} attendues`;
+            scoreDisplay.style.display = 'block';
+            document.getElementById('correction-section').style.display = 'block';
+        }
+
+        function startExercise() {
+            const nameInput = document.getElementById('candidateName');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                alert('Veuillez entrer votre nom pour commencer.');
+                return;
+            }
+            
+            if (!isAuthorizedCandidate(name)) {
+                alert('❌ Accès refusé. Votre nom n\'est pas autorisé pour faire ce test.');
+                nameInput.value = '';
+                nameInput.focus();
+                return;
+            }
+            
+            window.candidateName = name.toUpperCase();
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('content-section').classList.add('visible');
+            initializeRandomValues();
+        }
+
+        function restartExercise() {
+            window.candidateName = null;
+            document.getElementById('candidateName').value = '';
+            document.getElementById('intro').style.display = 'flex';
+            document.getElementById('content-section').classList.remove('visible');
+            document.getElementById('score-display').style.display = 'none';
+            document.getElementById('correction-section').style.display = 'none';
+            
+            const reponseTable = document.getElementById('response-table').querySelector('tbody');
+            const inputs = reponseTable.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.parentElement.style.backgroundColor = '';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('candidateName');
+            const startBtn = document.getElementById('startBtn');
+            
+            nameInput.addEventListener('input', function() {
+                startBtn.disabled = !this.value.trim();
+            });
+            
+            startBtn.addEventListener('click', startExercise);
+            nameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !startBtn.disabled) {
+                    startExercise();
+                }
+            });
+        });
+
+        window.addEventListener('load', function() {
+            if (!window.candidateName) {
+                document.getElementById('intro').style.display = 'flex';
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="banner">📐 Topographie - Module 9 📐</div>
+    <h1>EXERCICE n°1</h1>
+    <p class="subtitle">Complétez le tableau de nivellement avec les valeurs de correction</p>
+
+    <div id="intro" class="intro-container" style="display: flex;">
+        <div class="intro-form question">
+            <p><strong id="welcomeTitle">Bienvenue</strong></p>
+            <p id="welcomeText">Merci d'indiquer votre nom avant de commencer :</p>
+            <input id="candidateName" type="text" placeholder="Nom de l'élève" aria-label="Nom du candidat">
+            <div class="intro-buttons">
+                <button id="startBtn" disabled>➡️ Suivant</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="content-section" class="content-section">
+    
+    <div class="table-container">
+        <h2>Données Topographiques</h2>
+        <img src="https://raw.githubusercontent.com/CETPC-Christophe/topo-module-9-ex-1/refs/heads/main/module%209%20ex%201.jpg" alt="Schéma de mesure sur mire" style="max-width: 100%; height: auto; margin: 12px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <p style="text-align: center; color: #666; margin-bottom: 10px;">
+            <strong>Altitude de référence = <span class="altitude-reference" style="color: var(--orange);">847</span> m</strong>
+        </p>
+        <p style="text-align: center; color: #666; margin-bottom: 10px;"><em>Valeurs du tableau en mm</em></p>
+        
+        <table id="lectures-table">
+        <tr>
+            <td class="station">Station 1</td>
+            <td class="label">Référence =</td>
+            <td class="value" data-point="ref1">1847</td>
+            <td class="label">Point 1 =</td>
+            <td class="value" data-point="p1">3750</td>
+            <td class="label">Point 2 =</td>
+            <td class="value" data-point="p2">2105</td>
+        </tr>
+        <tr>
+            <td class="station">Station 2</td>
+            <td class="label">Point 2 =</td>
+            <td class="value" data-point="p2b">3272</td>
+            <td class="label">Point 3 =</td>
+            <td class="value" data-point="p3">1695</td>
+        </tr>
+        <tr>
+            <td class="station">Station 3</td>
+            <td class="label">Point 3 =</td>
+            <td class="value" data-point="p3b">2550</td>
+            <td class="label">Point 4 =</td>
+            <td class="value" data-point="p4">3867</td>
+        </tr>
+        <tr>
+            <td class="station">Station 4</td>
+            <td class="label">Point 4 =</td>
+            <td class="value" data-point="p4b">1402</td>
+            <td class="label">Point 5 =</td>
+            <td class="value" data-point="p5">2937</td>
+        </tr>
+        <tr>
+            <td class="station">Station 5</td>
+            <td class="label">Point 5 =</td>
+            <td class="value" data-point="p5b">3125</td>
+            <td class="label">Point 6 =</td>
+            <td class="value" data-point="p6">1762</td>
+        </tr>
+        <tr>
+            <td class="station">Station 6</td>
+            <td class="label">Point 6 =</td>
+            <td class="value" data-point="p6b">2675</td>
+            <td class="label">Point 7 =</td>
+            <td class="value" data-point="p7">3450</td>
+        </tr>
+        <tr>
+            <td class="station">Station 7</td>
+            <td class="label">Point 7 =</td>
+            <td class="value" data-point="p7b">1512</td>
+            <td class="label">Point 8 =</td>
+            <td class="value" data-point="p8">3092</td>
+        </tr>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>Tableau de Nivellement - Réponses de l'élève</h2>
+        <table id="response-table">
+        <thead>
+            <tr>
+                <th>Station</th>
+                <th>Point</th>
+                <th>Lecture arrière (mm)</th>
+                <th>Lecture avant (mm)</th>
+                <th>Dénivelé (mm)</th>
+                <th>Altitude (m)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+                <td class="input-cell"><input type="text"></td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+    <div class="control-container">
+        <button onclick="verifierReponses()">✓ Vérifier les réponses</button>
+    </div>
+
+    <div id="score-display" style="display: none;">
+        <h3 style="color: var(--noir); margin: 0; margin-bottom: 10px;">Résultat</h3>
+        <p id="score-text"></p>
+        <p id="details-text"></p>
+    </div>
+
+    <div id="correction-section" class="table-container" style="display: none;">
+        <h2>Tableau de Correction</h2>
+        <table class="correction-table">
+        <thead>
+            <tr>
+                <th>Station</th>
+                <th>Point</th>
+                <th>Lecture Arrière</th>
+                <th>Lecture avant</th>
+                <th>Dénivelé</th>
+                <th>Altitude</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>ref</td>
+                <td style="color: #0066cc; font-weight: bold;">1847</td>
+                <td></td>
+                <td></td>
+                <td class="highlight-yellow">847</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">3750</td>
+                <td>-1903</td>
+                <td class="highlight-yellow">845.097</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">2105</td>
+                <td>-258</td>
+                <td>846.742</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>2</td>
+                <td style="color: #0066cc; font-weight: bold;">3272</td>
+                <td></td>
+                <td></td>
+                <td class="highlight-yellow">846.742</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>3</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">1695</td>
+                <td>1577</td>
+                <td>848.319</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>3</td>
+                <td style="color: #0066cc; font-weight: bold;">2550</td>
+                <td></td>
+                <td></td>
+                <td class="highlight-yellow">848.319</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>4</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">3867</td>
+                <td>-1317</td>
+                <td>847.002</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>4</td>
+                <td style="color: #0066cc; font-weight: bold;">1402</td>
+                <td></td>
+                <td></td>
+                <td class="highlight-yellow">847.002</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>5</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">2937</td>
+                <td>-1535</td>
+                <td>845.467</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>5</td>
+                <td style="color: #0066cc; font-weight: bold;">3125</td>
+                <td></td>
+                <td></td>
+                <td class="highlight-yellow">845.467</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>6</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">1762</td>
+                <td>1363</td>
+                <td>846.830</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>6</td>
+                <td style="color: #0066cc; font-weight: bold;">2675</td>
+                <td></td>
+                <td></td>
+                <td class="highlight-yellow">846.830</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>7</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">3450</td>
+                <td>-775</td>
+                <td>846.055</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>7</td>
+                <td style="color: #0066cc; font-weight: bold;">1512</td>
+                <td></td>
+                <td></td>
+                <td class="highlight-yellow">846.055</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>8</td>
+                <td></td>
+                <td style="color: #0066cc; font-weight: bold;">3092</td>
+                <td>-1580</td>
+                <td>844.475</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+    <div class="control-container" style="margin-top: 30px; margin-bottom: 30px;">
+        <button onclick="exportCSV()">📥 Exporter en CSV</button>
+        <button onclick="exportPDF()" style="background: var(--orange);">📄 Générer PDF Corrigé</button>
+        <button onclick="restartExercise()" style="background: #666;">🔄 Nouvelle évaluation</button>
+    </div>
+
+    <p class="footer">© Exercice Topographie - Module 9</p>
+    </div>
+
+    <script>
+        function exportCSV() {
+            const inputs = document.querySelectorAll('#response-table .input-cell input[type="text"]');
+            let csv = '';
+            
+            if (window.candidateName) {
+                csv += `Candidat,${window.candidateName}\n`;
+                csv += `Date,${new Date().toLocaleDateString('fr-FR')}\n\n`;
+            }
+            
+            csv += 'Station,Point,Lecture arrière,Lecture avant,Dénivelé,Altitude\n';
+            
+            for (let i = 0; i < inputs.length; i += 6) {
+                const row = Array.from(inputs.slice(i, i + 6)).map(input => input.value || '').join(',');
+                csv += row + '\n';
+            }
+            
+            const link = document.createElement('a');
+            link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            link.download = `reponses_${window.candidateName || 'eleve'}.csv`;
+            link.click();
+        }
+
+        function exportPDF() {
+            const element = document.querySelector('body');
+            const opt = {
+                margin: 10,
+                filename: 'correction_topographie.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
